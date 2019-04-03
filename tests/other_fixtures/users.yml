@@ -1,0 +1,5 @@
+_fixture:
+  model_class: __User
+
+jester:
+  name: Jester Lavorre

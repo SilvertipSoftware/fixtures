@@ -1,0 +1,7 @@
+_fixture:
+  model_class: __User
+
+caleb:
+  name: Caleb Widogast
+  email: $LABEL@domain.com
+  password: password

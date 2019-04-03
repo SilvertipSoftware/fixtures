@@ -1,0 +1,15 @@
+_fixture:
+  model_class: CLASSNAME
+
+DEFAULTS: &DEFAULTS
+  city: Vancouver
+
+fixture1:
+  <<: *DEFAULTS
+  name: Fixture 1
+  age: 2
+  nickname: "Ace"
+
+fixture2:
+  name: Fixture 2
+  age: 3

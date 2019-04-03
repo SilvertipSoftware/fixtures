@@ -1,0 +1,8 @@
+_fixture:
+  model_class: __Role
+
+admin:
+  name: admin
+
+superuser:
+  name: superuser
