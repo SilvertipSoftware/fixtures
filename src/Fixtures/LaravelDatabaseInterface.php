@@ -5,6 +5,24 @@ namespace SilvertipSoftware\Fixtures;
 class LaravelDatabaseInterface implements DatabaseInterface
 {
     /**
+     * Disable DB foreign key constraints.
+     *
+     * @param string $connection The name of the connection
+     */
+    public function disableForeignKeyConstraints($connection) {
+        \DB::connection($connection)->getSchemaBuilder()->disableForeignKeyConstraints();
+    }
+
+    /**
+     * Enable DB foreign key constraints.
+     *
+     * @param string $connection The name of the connection
+     */
+    public function enableForeignKeyConstraints($connection) {
+        \DB::connection($connection)->getSchemaBuilder()->enableForeignKeyConstraints();
+    }
+
+    /**
      * Wipes a database table of all records
      *
      * @param string $connection The name of the connection

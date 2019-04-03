@@ -92,6 +92,7 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     public function testClearsAndLoadsFixtures() {
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('wipe')->with(null, 'users');
         $this->mockLoader->shouldReceive('insert')->andReturnUsing(function($c, $t, $r) {
             $this->assertNull($c);
@@ -100,6 +101,7 @@ class UsesFixturesTraitTest extends TestCase
             $this->assertEquals(1, count($r));
             $this->assertEquals('Caleb Widogast', $r[0]['name']);
         });
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
         $test = $this->createTest(['users']);
         FixtureSet::resetCache();
         $test->exposedClearCache();
@@ -160,8 +162,10 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     public function testCachesFoundModels() {
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('wipe');
         $this->mockLoader->shouldReceive('insert');
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('findModel')->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
             return new __User([
                 'id' => $id,
@@ -183,8 +187,10 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     public function testModelsAreReloadedForNextTest() {
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('wipe');
         $this->mockLoader->shouldReceive('insert');
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('findModel')->twice()->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
             return new __User([
                 'id' => $id,
