@@ -1,6 +1,7 @@
 {
-    "name": "SilvertipSoftware/fixtures",
+    "name": "silvertipsoftware/fixtures",
     "description": "A better fixture package for Laravel 5",
+    "keywords": ["laravel", "fixtures"],
     "type": "library",
     "license": "MIT",
     "authors": [
