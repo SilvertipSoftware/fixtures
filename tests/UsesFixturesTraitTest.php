@@ -2,11 +2,12 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\TestCase;
 use SilvertipSoftware\Fixtures\FixtureSet;
 use SilvertipSoftware\Fixtures\UsesFixtures;
+
+include('TestModels.php');
 
 $container = null;
 
@@ -30,15 +31,6 @@ function config($name) {
     return $container['config']->get($key, $default);
 }
 
-class __User extends Model
-{
-    protected $table = 'users';
-    protected $fillable = ['*'];
-}
-
-class __Role extends Model {
-    protected $table = 'roles';
-}
 
 abstract class Sample extends StubTestCase {
     use UsesFixtures;
@@ -167,10 +159,7 @@ class UsesFixturesTraitTest extends TestCase
         $this->mockLoader->shouldReceive('insert');
         $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('findModel')->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
-            return new __User([
-                'id' => $id,
-                'name' => 'Caleb Widogast'
-            ]);
+            return $this->makeTestUser($id);
         });
 
         $test = $this->createTest(['users']);
@@ -192,10 +181,7 @@ class UsesFixturesTraitTest extends TestCase
         $this->mockLoader->shouldReceive('insert');
         $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
         $this->mockLoader->shouldReceive('findModel')->twice()->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
-            return new __User([
-                'id' => $id,
-                'name' => 'Caleb Widogast'
-            ]);
+            return $this->makeTestUser($id);
         });
         $test = $this->createTest(['all']);
         FixtureSet::resetCache();
@@ -206,6 +192,13 @@ class UsesFixturesTraitTest extends TestCase
         $test->setUp();
         $test->users('caleb');
         $this->assertTrue(true);
+    }
+
+    private function makeTestUser($id) {
+        return new __User([
+            'id' => $id,
+            'name' => 'Caleb Widogast'
+        ]);
     }
 
     private function createTest($fixtures = []) {

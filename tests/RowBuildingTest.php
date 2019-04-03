@@ -2,48 +2,11 @@
 
 use PHPUnit\Framework\TestCase;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use SilvertipSoftware\Fixtures\TableRows;
 use SilvertipSoftware\Fixtures\Fixture;
 
-class __User extends Model
-{
-}
-
-class __GlobalUser extends Model
-{
-    public $incrementing = false;
-    public $timestamps = false;
-}
-
-class __Profile extends Model
-{
-    public function user()
-    {
-        return $this->belongsTo(__User::class);
-    }
-
-    public function owner()
-    {
-        return $this->morphTo();
-    }
-}
-
-class __Role extends Model {
-    protected $primaryKey = 'rid';
-
-    public function users()
-    {
-        return $this->belongsToMany(__User::class, 'role_user', 'role_id', 'user_id');
-    }
-
-    public function managers()
-    {
-        return $this->morphToMany(__User::class, 'managable', null, null, 'user_id');
-    }
-}
-
+include('TestModels.php');
 
 class RowBuildingTest extends TestCase
 {
