@@ -207,7 +207,7 @@ class FixtureSet implements ArrayAccess
                 }
             }
 
-            self::insertFixturesSet($connectionName, $tableRowsForConnection, array_keys($tableRowsForConnection));
+            self::insertFixtureSetRows($connectionName, $tableRowsForConnection, array_keys($tableRowsForConnection));
         });
     }
 
@@ -216,14 +216,22 @@ class FixtureSet implements ArrayAccess
         self::$allLoadedFixtures = array_merge(self::$allLoadedFixtures, $fixturesMap);
     }
 
-    private static function insertFixturesSet($connectionName, $tableRowsForConnection, $tablesToClear)
+    private static function insertFixtureSetRows($connectionName, $tableRowsForConnection, $tablesToClear)
     {
-        foreach ($tablesToClear as $table) {
-            static::getDatabaseInterface()->wipe($connectionName, $table);
-        }
+        static::getDatabaseInterface()->disableForeignKeyConstraints($connectionName);
 
-        foreach ($tableRowsForConnection as $table => $rows) {
-            static::getDatabaseInterface()->insert($connectionName, $table, $rows);
+        try {
+            foreach ($tablesToClear as $table) {
+                static::getDatabaseInterface()->wipe($connectionName, $table);
+            }
+
+            foreach ($tableRowsForConnection as $table => $rows) {
+                static::getDatabaseInterface()->insert($connectionName, $table, $rows);
+            }
+        } catch( \Exception $ex ) {
+            throw new FixtureException("Error inserting fixture set rows", FixtureException::DB_ERROR, $ex);
+        } finally {
+            static::getDatabaseInterface()->enableForeignKeyConstraints($connectionName);
         }
     }
 

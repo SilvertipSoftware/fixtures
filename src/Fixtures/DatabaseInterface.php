@@ -8,6 +8,20 @@ namespace SilvertipSoftware\Fixtures;
 interface DatabaseInterface
 {
     /**
+     * Disable DB foreign key constraints.
+     *
+     * @param string $connection The name of the connection
+     */
+    public function disableForeignKeyConstraints($connection);
+
+    /**
+     * Enable DB foreign key constraints.
+     *
+     * @param string $connection The name of the connection
+     */
+    public function enableForeignKeyConstraints($connection);
+
+    /**
      * Wipes a database table of all records
      *
      * @param string $connection The name of the connection
