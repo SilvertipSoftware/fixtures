@@ -163,6 +163,10 @@ class FixtureSet implements ArrayAccess
         $fs = new Filesystem;
         $yamlFiles = array_merge($fs->glob($path . '/*.yml'), $fs->glob($path . '.yml'));
 
+        if (count($yamlFiles) == 0) {
+            throw new FixtureException("No fixture set found at $path", FixtureException::FILE_NOT_FOUND);
+        }
+        
         $ret = [];
         foreach ($yamlFiles as $yamlFile) {
             $fixtureFile = FixtureFile::open($yamlFile);

@@ -4,6 +4,7 @@ use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\TestCase;
+use SilvertipSoftware\Fixtures\FixtureException;
 use SilvertipSoftware\Fixtures\FixtureSet;
 use SilvertipSoftware\Fixtures\UsesFixtures;
 
@@ -63,8 +64,7 @@ class UsesFixturesTraitTest extends TestCase
 {
     protected $mockLoader;
 
-    protected function setUp()
-    {
+    protected function setUp() {
         parent::setUp();
         __container(new Container);
         $this->setUpDatabase();
@@ -133,6 +133,22 @@ class UsesFixturesTraitTest extends TestCase
         $test->setUp();
         $fixtures = $test->getGlobalCache()[get_class($test)];
         $this->assertEquals(1, count($fixtures));
+    }
+
+    public function testIgnoresFixturesWhenSpecified() {
+        $test = $this->createTest([]);
+        $test->exposedClearCache();
+        $test->setUp();
+        $this->assertTrue(true);
+    }
+
+    public function testErrorsOnMissingFixtureSet() {
+        $this->expectException(FixtureException::class);
+        $this->expectExceptionCode(FixtureException::FILE_NOT_FOUND);
+        $test = $this->createTest(['BADNAME']);
+        $test->exposedClearCache();
+        $test->setUp();
+        $this->assertTrue(true);
     }
 
     public function testDoesNotNeedToReseed() {

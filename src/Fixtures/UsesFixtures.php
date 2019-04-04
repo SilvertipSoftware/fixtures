@@ -78,11 +78,9 @@ trait UsesFixtures
         $this->modelCache = [];
 
         $clz = get_class($this);
-        if (!empty(static::$alreadyLoadedFixtures[$clz]))
-        {
+        if (!empty(static::$alreadyLoadedFixtures[$clz])) {
             $this->loadedFixtures = static::$alreadyLoadedFixtures[$clz];
-        } else
-        {
+        } else {
             $this->loadedFixtures = $this->loadFixtures();
             static::$alreadyLoadedFixtures[$clz] = $this->loadedFixtures;
         }
@@ -98,11 +96,10 @@ trait UsesFixtures
     {
         $fs = new Filesystem;
         $fixtureSetNames = Arr::flatten([$fixtureSetNames]);
-        if ($fixtureSetNames[0] == 'all')
-        {
+
+        if (count($fixtureSetNames) == 1 && $fixtureSetNames[0] == 'all') {
             $glob = base_path($this->fixturePath) . '/*.yml';
-            $fixtureSetNames = array_map(function ($fsName)
-            {
+            $fixtureSetNames = array_map(function ($fsName) {
                 preg_match('/.*\/([^\/]*)\.yml$/', $fsName, $matches);
                 return $matches[1];
             }, $fs->glob($glob));
@@ -122,8 +119,7 @@ trait UsesFixtures
     {
         $fixtures = FixtureSet::createFixtures(base_path($this->fixturePath), $this->fixtureSetsToLoad, $this->fixtureClassNames, []);
         $byName = [];
-        foreach ($fixtures as $fixture)
-        {
+        foreach ($fixtures as $fixture) {
             $byName[$fixture->getName()] = $fixture;
         }
         return $byName;
@@ -147,8 +143,7 @@ trait UsesFixtures
      */
     protected function setupFixtureAccessors($names)
     {
-        foreach ($names as $name)
-        {
+        foreach ($names as $name) {
             $this->macro($name, function ($labels) use ($name) {
                 $labels = Arr::flatten([$labels]);
                 $isSingleRecord = count($labels) == 1;
