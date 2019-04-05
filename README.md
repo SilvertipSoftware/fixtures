@@ -1,4 +1,4 @@
-## Fixtures
+# Fixtures
 
 A relatively faithful clone of [ActiveRecord's fixture capability](https://guides.rubyonrails.org/testing.html#the-low-down-on-fixtures).
 Much of the docs from there are relevant, but some of the key points are below.
@@ -8,7 +8,7 @@ The are **not** meant to create everything you'd ever need in a test, just the b
 
 Fixtures are written in YAML, and there's one file per Eloquent model class.
 
-### Requirements & Caveats
+## Requirements & Caveats
 
 - Tests must use `DatabaseTransactions`, since the fixtures are created before the tests run, and need to be returned
 to the known-good state after each test. This may change in future releases.
@@ -17,7 +17,7 @@ to the known-good state after each test. This may change in future releases.
 a chore.
 - All fixtures that are defined will **wipe their model's table. DO NOT run tests against data you care about**.
 
-### Basic Usage
+## Basic Usage
 
 Fixtures by default live in the `tests/fixtures` directory, although that is configurable via the `$fixturePath`. Fixture file names and model names 
 typically match, so to create a fixture for a `\Framework` model, create `test/fixtures/frameworks.yml` like:
@@ -50,7 +50,7 @@ public function testAccessing() {
 }
 ```
 
-### Relations
+## Relations
 
 Relations that are instances of `BelongsTo` and `BelongsToMany`, which includes the morphing `MorphTo` and `MorphToMany`, can also be easily set up by
 name. Polymorphic relations must include the morph type (the classname by default, or whatever is in your `morphMap`) in parentheses. Fixtures sets 
@@ -89,7 +89,7 @@ sue:
     skills: laravel, django
 ```
 
-### Class Names
+## Class Names
 
 As mentioned above, namespaced models are not handled well yet, so generally you'll have to tell Fixtures what model class the fixture set is for. 
 In your YAML include a record like:
@@ -99,7 +99,7 @@ _fixture:
     model_class: \App\Models\Framework
 ```
 
-### Label Interpolation & Defaults
+## Label Interpolation & Defaults
 
 Including the string `$LABEL` in a column definition will replace that tag with the label of the fixture, which is often great for usernames, email
 addresses, etc:
