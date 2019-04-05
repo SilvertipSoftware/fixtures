@@ -40,7 +40,7 @@ django:
     language: Python
 ```
 
-When your tests run, these 3 database records will be created, and ids automatically assigned when needed. Accessor macros are also created, referencing a 
+When your tests run, these 3 database records will be created, and ids automatically assigned when needed. Accessor macros are also created, so referencing a 
 fixture in a test is as easy as:
 
 ```php
@@ -77,15 +77,16 @@ qs:
 # coders.yml
 # A \Coder can specialize in either a \Framework or a \ORM (via a polymorphic relationship)
 # \Coders also have skills with many \Frameworks (via a many to many relationship)
+# Many-to-many labels must be separated by commas.
 jane:
     name: Jane Coder
     specialty: ar (\Orm)
-    skills: ror laravel
+    skills: ror, laravel
 
 sue:
     name: Susan Programmer
     specialty: laravel (\Framework)
-    skills: laravel django
+    skills: laravel, django
 ```
 
 ### Class Names
