@@ -26,7 +26,7 @@ function base_path($path) {
     return $path;
 }
 
-function config($name) {
+function config($key, $default = null) {
     global $container;
 
     return $container['config']->get($key, $default);
@@ -36,9 +36,12 @@ function config($name) {
 abstract class Sample extends StubTestCase {
     use UsesFixtures;
 
-    public function __construct($fixtures) {
+    public function __construct($fixtures, $namespace) {
         parent::__construct();
         $this->fixtures = $fixtures;
+        if ($namespace) {
+            $this->modelNamespace = $namespace;
+        }
     }
     public function getGlobalCache() {
         return static::$alreadyLoadedFixtures;
@@ -84,16 +87,16 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     public function testClearsAndLoadsFixtures() {
-        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
-        $this->mockLoader->shouldReceive('wipe')->with(null, 'users');
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with('default');
+        $this->mockLoader->shouldReceive('wipe')->with('default', 'users');
         $this->mockLoader->shouldReceive('insert')->andReturnUsing(function($c, $t, $r) {
-            $this->assertNull($c);
+            $this->assertEquals('default', $c);
             $this->assertEquals('users', $t);
             $this->assertInternalType('array', $r);
             $this->assertEquals(1, count($r));
             $this->assertEquals('Caleb Widogast', $r[0]['name']);
         });
-        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with('default');
         $test = $this->createTest(['users']);
         FixtureSet::resetCache();
         $test->exposedClearCache();
@@ -169,11 +172,22 @@ class UsesFixturesTraitTest extends TestCase
         $this->assertEquals(1, count($fixtures));
     }
 
+    public function testUsesNamespacePrefix() {
+        $this->mockLoader->shouldIgnoreMissing();
+        $test = $this->createTest(['all'], 'App\Models');
+        FixtureSet::resetCache();
+        $test->exposedClearCache();
+        $test->setDirectory('tests/ns_fixtures');
+        $test->setUp();
+        $fixtures = $test->getGlobalCache()[get_class($test)];
+        $this->assertEquals(1, count($fixtures));
+    }
+
     public function testCachesFoundModels() {
-        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with('default');
         $this->mockLoader->shouldReceive('wipe');
         $this->mockLoader->shouldReceive('insert');
-        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with('default');
         $this->mockLoader->shouldReceive('findModel')->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
             return $this->makeTestUser($id);
         });
@@ -192,10 +206,10 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     public function testModelsAreReloadedForNextTest() {
-        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with(null);
+        $this->mockLoader->shouldReceive('disableForeignKeyConstraints')->with('default');
         $this->mockLoader->shouldReceive('wipe');
         $this->mockLoader->shouldReceive('insert');
-        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with(null);
+        $this->mockLoader->shouldReceive('enableForeignKeyConstraints')->with('default');
         $this->mockLoader->shouldReceive('findModel')->twice()->with(__User::class, Mockery::any())->andReturnUsing(function($clz, $id) {
             return $this->makeTestUser($id);
         });
@@ -217,8 +231,8 @@ class UsesFixturesTraitTest extends TestCase
         ]);
     }
 
-    private function createTest($fixtures = []) {
-        $test = new class($fixtures) extends Sample {};
+    private function createTest($fixtures = [], $namespace = null) {
+        $test = new class($fixtures, $namespace) extends Sample {};
         return $test;
     }
 

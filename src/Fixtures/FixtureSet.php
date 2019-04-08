@@ -16,6 +16,7 @@ class FixtureSet implements ArrayAccess
     protected static $allCachedFixtures = [];
     protected static $allLoadedFixtures = [];
     protected static $database;
+    protected static $modelNamespacePrefix = '';
 
     protected $name;
     protected $path;
@@ -91,7 +92,7 @@ class FixtureSet implements ArrayAccess
 
     public static function defaultFixtureModelName($fsName, $config = [])
     {
-        return Str::studly(Str::singular($fsName));
+        return static::$modelNamespacePrefix . '\\' . Str::studly(Str::singular($fsName));
     }
 
     public static function defaultFixtureTableName($fsName, $config = [])
@@ -239,9 +240,21 @@ class FixtureSet implements ArrayAccess
         }
     }
 
+    public static function setModelNamespace($prefix) {
+        self::$modelNamespacePrefix = $prefix;
+    }
+
+    public static function getModelNamespace($prefix) {
+        return self::$modelNamespacePrefix;
+    }
+
     public static function getDatabaseInterface()
     {
-        return self::$database ?: new LaravelDatabaseInterface();
+        if (!self::$database) {
+            self::$database = new LaravelDatabaseInterface();
+        }
+
+        return self::$database;
     }
 
     public static function setDatabaseInterface(DatabaseInterface $db)

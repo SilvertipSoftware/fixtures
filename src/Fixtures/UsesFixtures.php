@@ -33,6 +33,13 @@ trait UsesFixtures
     protected $fixturePath = 'tests/fixtures';
 
     /**
+     * The namespace to find models in. Default to the standard Laravel namespace.
+     *
+     * @var string
+     */
+    protected $modelNamespace = '\App';
+
+    /**
      * A test-supplied default fixture name to class name mapping. Populated with defaults if not
      * supplied; just makes config rows in fixtures not required in certain cases.
      *
@@ -63,6 +70,8 @@ trait UsesFixtures
      */
     protected function setUpTraits()
     {
+        FixtureSet::setModelNamespace($this->modelNamespace);
+
         $this->withFixtures($this->fixtures ?? 'all')
             ->setUpFixtures();
         parent::setUpTraits();
