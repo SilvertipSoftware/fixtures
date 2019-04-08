@@ -20,7 +20,7 @@ a chore.
 ## Basic Usage
 
 Fixtures by default live in the `tests/fixtures` directory, although that is configurable via the `$fixturePath`. Fixture file names and model names 
-typically match, so to create a fixture for a `\Framework` model, create `test/fixtures/frameworks.yml` like:
+typically match, so to create a fixture for an `\App\Framework` model, create `test/fixtures/frameworks.yml` like:
 
 ```yaml
 # Some frameworks
@@ -59,7 +59,7 @@ the `id` (and `type` for polymorphisms) of the relation automatically, so you do
 
 ```yaml
 # orms.yml
-# An \Orm belongs to a \Framework
+# An \App\Orm belongs to a \Framework
 eloquent:
     name: Eloquent
     framework: laravel
@@ -75,29 +75,41 @@ qs:
 
 ```yaml
 # coders.yml
-# A \Coder can specialize in either a \Framework or a \ORM (via a polymorphic relationship)
-# \Coders also have skills with many \Frameworks (via a many to many relationship)
+# An \App\Coder can specialize in either an \App\Framework or a \App\ORM (via a polymorphic relationship)
+# Coders also have skills with many Frameworks (via a many to many relationship)
 # Many-to-many labels must be separated by commas.
 jane:
     name: Jane Coder
-    specialty: ar (\Orm)
+    specialty: ar (App\Orm)
     skills: ror, laravel
 
 sue:
     name: Susan Programmer
-    specialty: laravel (\Framework)
+    specialty: laravel (App\Framework)
     skills: laravel, django
 ```
 
 ## Class Names
 
-As mentioned above, namespaced models are not handled well yet, so generally you'll have to tell Fixtures what model class the fixture set is for. 
+As mentioned above, namespaced models are not handled well yet. Fixtures defaults to using the default Laravel namespace of `\App`, but if you put models
+elsewhere you'll have to tell Fixtures what model class the fixture set is for.
+
 In your YAML include a record like:
 
 ```yaml
 _fixture:
     model_class: \App\Models\Framework
 ```
+
+If the bulk of your models live in one namespace, you can change the default by setting `$modelNamespace` in your test class. So, we could eliminate the
+need for the above by:
+
+```php
+    protected $modelNamespace = '\App\Models';
+```
+
+Fixtures outside this namepsace will need `model_class` records. And this does not affect the string used for polymorphic relations.
+
 
 ## Label Interpolation & Defaults
 
