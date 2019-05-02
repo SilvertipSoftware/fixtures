@@ -26,20 +26,6 @@ trait UsesFixtures
     protected static $alreadyLoadedFixtures = [];
 
     /**
-     * The path to look for fixtures, relative to the project base path. Customizable.
-     *
-     * @var string
-     */
-    protected $fixturePath = 'tests/fixtures';
-
-    /**
-     * The namespace to find models in. Default to the standard Laravel namespace.
-     *
-     * @var string
-     */
-    protected $modelNamespace = '\App';
-
-    /**
      * A test-supplied default fixture name to class name mapping. Populated with defaults if not
      * supplied; just makes config rows in fixtures not required in certain cases.
      *
@@ -63,6 +49,41 @@ trait UsesFixtures
     protected $modelCache = [];
 
     /**
+     * Clears the cache. Not usually necessary.
+     */
+    protected function clearCache()
+    {
+        static::$alreadyLoadedFixtures = [];
+        $this->modelCache = [];
+    }
+
+    /*
+     * Get the directory where fixtures are stored, without a trailing slash.
+     *
+     * @return string The fixure path if specified. Defaults to 'tests/fixtures'
+     */
+    protected function getFixturePath()
+    {
+        return $this->fixturePath ?? 'tests/fixtures';
+    }
+
+    /**
+     * Load the specified fixture sets and return keyed by name.
+     *
+     * @return array
+     */
+    protected function loadFixtures()
+    {
+        $fixtures = FixtureSet::createFixtures(base_path($this->getFixturePath()), $this->fixtureSetsToLoad, $this->fixtureClassNames, []);
+        $byName = [];
+        foreach ($fixtures as $fixture) {
+            $byName[$fixture->getName()] = $fixture;
+        }
+        return $byName;
+    }
+
+
+    /**
      * Setup/load the specified fixtures before a test run. We do this before other the parent setup because
      * we want fixtures loaded before transactions get started.
      *
@@ -70,7 +91,7 @@ trait UsesFixtures
      */
     protected function setUpTraits()
     {
-        FixtureSet::setModelNamespace($this->modelNamespace);
+        FixtureSet::setModelNamespace($this->modelNamespace ?? '\App');
 
         $this->withFixtures($this->fixtures ?? 'all')
             ->setUpFixtures();
@@ -93,53 +114,6 @@ trait UsesFixtures
             $this->loadedFixtures = $this->loadFixtures();
             static::$alreadyLoadedFixtures[$clz] = $this->loadedFixtures;
         }
-    }
-
-    /**
-     * Determine the list of fixture sets to load. If 'all' is specified (the default), search the fixture
-     * path for YAML files.
-     *
-     * @return $this
-     */
-    protected function withFixtures($fixtureSetNames)
-    {
-        $fs = new Filesystem;
-        $fixtureSetNames = Arr::flatten([$fixtureSetNames]);
-
-        if (count($fixtureSetNames) == 1 && $fixtureSetNames[0] == 'all') {
-            $glob = base_path($this->fixturePath) . '/*.yml';
-            $fixtureSetNames = array_map(function ($fsName) {
-                preg_match('/.*\/([^\/]*)\.yml$/', $fsName, $matches);
-                return $matches[1];
-            }, $fs->glob($glob));
-        }
-
-        $this->fixtureSetsToLoad = $fixtureSetNames;
-        $this->setupFixtureAccessors($fixtureSetNames);
-        return $this;
-    }
-
-    /**
-     * Load the specified fixture sets and return keyed by name.
-     *
-     * @return array
-     */
-    protected function loadFixtures()
-    {
-        $fixtures = FixtureSet::createFixtures(base_path($this->fixturePath), $this->fixtureSetsToLoad, $this->fixtureClassNames, []);
-        $byName = [];
-        foreach ($fixtures as $fixture) {
-            $byName[$fixture->getName()] = $fixture;
-        }
-        return $byName;
-    }
-
-    /**
-     * Clears the cache. Not usually necessary.
-     */
-    protected function clearCache() {
-        static::$alreadyLoadedFixtures = [];
-        $this->modelCache = [];
     }
 
     /**
@@ -171,5 +145,29 @@ trait UsesFixtures
                 return $isSingleRecord ? $records[0] : $records;
             });
         }
+    }
+
+    /**
+     * Determine the list of fixture sets to load. If 'all' is specified (the default), search the fixture
+     * path for YAML files.
+     *
+     * @return $this
+     */
+    protected function withFixtures($fixtureSetNames)
+    {
+        $fs = new Filesystem;
+        $fixtureSetNames = Arr::flatten([$fixtureSetNames]);
+
+        if (count($fixtureSetNames) == 1 && $fixtureSetNames[0] == 'all') {
+            $glob = base_path($this->getFixturePath()) . '/*.yml';
+            $fixtureSetNames = array_map(function ($fsName) {
+                preg_match('/.*\/([^\/]*)\.yml$/', $fsName, $matches);
+                return $matches[1];
+            }, $fs->glob($glob));
+        }
+
+        $this->fixtureSetsToLoad = $fixtureSetNames;
+        $this->setupFixtureAccessors($fixtureSetNames);
+        return $this;
     }
 }
