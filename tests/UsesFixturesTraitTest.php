@@ -2,7 +2,6 @@
 
 use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\TestCase;
 use SilvertipSoftware\Fixtures\FixtureException;
 use SilvertipSoftware\Fixtures\FixtureSet;

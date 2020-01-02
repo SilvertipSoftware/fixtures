@@ -150,13 +150,10 @@ class FixtureSet implements ArrayAccess
         return self::cachedFixtures($connectionName, $fixtureSetNames);
     }
 
-    public static function identify($label, $columnType = 'integer')
+    public static function identify($label, $related)
     {
-        if ($columnType == 'uuid') {
-            return Uuid::uuid5(Uuid::NAMESPACE_OID, $label)->toString();
-        } else {
-            return crc32($label) % self::MAX_ID;
-        }
+        var_dump($related->incrementing);
+        return !$related->incrementing ? Uuid::uuid5(Uuid::NAMESPACE_OID, $label)->toString() : crc32($label) % self::MAX_ID;
     }
 
     private function readFixtureFiles($path)

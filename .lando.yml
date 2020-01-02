@@ -1,0 +1,13 @@
+name: fixtures
+recipe: lamp
+config:
+  php: '7.3'
+  webroot: .
+  database: mysql:8.0
+  xdebug: true
+
+tooling:
+  phpunit:
+    service: appserver
+    description: "Run PHP Unit tests: lando phpunit \nCan run --filter testFunctionName ClassNameTest /path/to/class"
+    cmd: /app/vendor/bin/phpunit

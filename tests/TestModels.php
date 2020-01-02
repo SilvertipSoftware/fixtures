@@ -16,6 +16,11 @@ namespace {
         {
             public $incrementing = false;
             public $timestamps = false;
+
+            public function user()
+            {
+                return $this->belongsTo(__User::class);
+            }
         }
     }
 
