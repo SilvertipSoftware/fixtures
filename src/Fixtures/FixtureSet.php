@@ -152,7 +152,6 @@ class FixtureSet implements ArrayAccess
 
     public static function identify($label, $related)
     {
-        var_dump($related->incrementing);
         return !$related->incrementing ? Uuid::uuid5(Uuid::NAMESPACE_OID, $label)->toString() : crc32($label) % self::MAX_ID;
     }
 
