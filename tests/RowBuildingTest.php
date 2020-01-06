@@ -129,6 +129,7 @@ class RowBuildingTest extends TestCase
         $builtRows = (new TableRows('global_users', __GlobalUser::class, $this->globalUserFixtures))->toArray();
         $this->assertInternalType('int', $builtRows['global_users'][0]['user_id']);
         $this->assertInternalType('string', $builtRows['global_users'][0]['id']);
+        $this->assertEquals($userRows['users'][0]['id'], $builtRows['global_users'][0]['user_id']);
     }
 
     public function testItSetsMorphToRelation()
