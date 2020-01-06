@@ -139,7 +139,7 @@ class TableRow
         $key = $this->model->getKeyName();
         if ($key != null && !isset($this->fixture[$key]))
         {
-            $this->fixture[$key] = FixtureSet::identify($this->label, $this->model->incrementing ? 'integer' : 'uuid');
+            $this->fixture[$key] = FixtureSet::identify($this->label, $this->model);
         }
 
         return $this;
@@ -160,7 +160,7 @@ class TableRow
             if (method_exists($this->model, $key)) {
                 $type = $this->model->{$key}();
                 if ($type instanceof BelongsTo) {
-                    $related = $type->getParent();
+                    $related = $type->getRelated();
                     $fkName = method_exists($type, 'getForeignKeyName') ? $type->getForeignKeyName() : $type->getForeignKey();
                     $label = Arr::pull($this->fixture, $key);
 
@@ -169,10 +169,10 @@ class TableRow
                         $this->fixture[$type->getMorphType()] = $matches[2];
                     }
 
-                    $this->fixture[$fkName] = FixtureSet::identify($label, $related->incrementing ? 'integer' : 'uuid');
+                    $this->fixture[$fkName] = FixtureSet::identify($label, $related);
                 } elseif ($type instanceof BelongsToMany) {
                     $pivotTableName = $type->getTable();
-                    $related = $type->getParent();
+                    $related = $type->getRelated();
                     $pivotRows = [];
                     $rawLabel = Arr::pull($this->fixture, $key);
                     $labels = is_array($rawLabel) ? $rawLabel : preg_split('/\s*,\s*/', $rawLabel);
@@ -184,7 +184,7 @@ class TableRow
                         }
 
                         $pivotRow[$type->getForeignPivotKeyName()] = $this->fixture[$this->model->getKeyName()];
-                        $pivotRow[$type->getRelatedPivotKeyName()] =FixtureSet::identify($label, $related->incrementing ? 'integer' : 'uuid');
+                        $pivotRow[$type->getRelatedPivotKeyName()] = FixtureSet::identify($label, $related);
                         $pivotRows[] = $pivotRow;
                     }
                     $this->container->addRowsToTable($pivotTableName, $pivotRows);

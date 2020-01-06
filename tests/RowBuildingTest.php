@@ -28,6 +28,12 @@ class RowBuildingTest extends TestCase
             ])
         ];
 
+        $this->globalUserFixtures = [
+            'admin' => new Fixture([
+                'user' => 'caleb',
+            ]),
+        ];
+
         $this->profileFixtures = [
             'caleb' => new Fixture([
                 'avatar' => 'caleb.png',
@@ -114,6 +120,16 @@ class RowBuildingTest extends TestCase
         $this->assertEquals($userRows['users'][0]['id'], $builtRows['profiles'][0]['user_id']);
 
         $this->assertArrayNotHasKey('user_id', $builtRows['profiles'][1]);
+    }
+
+    public function testParentIdIsNotUuid()
+    {
+        DB::shouldReceive('getDriverName')->andReturn('mysql');
+        $userRows = (new TableRows('users', __User::class, $this->userFixtures))->toArray();
+        $builtRows = (new TableRows('global_users', __GlobalUser::class, $this->globalUserFixtures))->toArray();
+        $this->assertInternalType('int', $builtRows['global_users'][0]['user_id']);
+        $this->assertInternalType('string', $builtRows['global_users'][0]['id']);
+        $this->assertEquals($userRows['users'][0]['id'], $builtRows['global_users'][0]['user_id']);
     }
 
     public function testItSetsMorphToRelation()
