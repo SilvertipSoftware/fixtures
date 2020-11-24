@@ -38,7 +38,7 @@ class FixtureSeeder extends Seeder
 
     protected function findFixtures()
     {
-        $this->fixtureSetsToLoad = FixtureFinder::findAllFixturesInPath($this->getFixturePath());
+        $this->fixtureSetsToLoad = FixtureFile::findAllFixturesInPath($this->getFixturePath());
 
         return $this;
     }
