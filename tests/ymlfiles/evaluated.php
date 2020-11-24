@@ -13,3 +13,13 @@ fixture1:
 fixture2:
   name: <?= __FILE__ ?> 
   age: <?= rand(1,100) ?> 
+
+<?php
+    foreach ([3, 4, 5] as $num) {
+?>
+fixture<?= $num ?>:
+  name: Person <?= $num ?> 
+  age: <?= 10*$num ?> 
+<?php
+    }
+?>
