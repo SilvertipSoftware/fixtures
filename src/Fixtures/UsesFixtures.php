@@ -2,7 +2,6 @@
 
 namespace SilvertipSoftware\Fixtures;
 
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Traits\Macroable;
 
@@ -155,15 +154,10 @@ trait UsesFixtures
      */
     protected function withFixtures($fixtureSetNames)
     {
-        $fs = new Filesystem;
         $fixtureSetNames = Arr::flatten([$fixtureSetNames]);
 
         if (count($fixtureSetNames) == 1 && $fixtureSetNames[0] == 'all') {
-            $glob = base_path($this->getFixturePath()) . '/*.yml';
-            $fixtureSetNames = array_map(function ($fsName) {
-                preg_match('/.*\/([^\/]*)\.yml$/', $fsName, $matches);
-                return $matches[1];
-            }, $fs->glob($glob));
+            $fixtureSetNames = FixtureFile::findAllFixturesInPath($this->getFixturePath());
         }
 
         $this->fixtureSetsToLoad = $fixtureSetNames;

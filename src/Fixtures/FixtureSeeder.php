@@ -3,7 +3,6 @@
 namespace SilvertipSoftware\Fixtures;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Filesystem\Filesystem;
 
 /**
  * Use fixtures to seed the database. If you've got a non-standard setup, you'll have to subclass this,
@@ -39,15 +38,8 @@ class FixtureSeeder extends Seeder
 
     protected function findFixtures()
     {
-        $fs = new Filesystem;
+        $this->fixtureSetsToLoad = FixtureFinder::findAllFixturesInPath($this->getFixturePath());
 
-        $glob = base_path($this->getFixturePath()) . '/*.yml';
-        $fixtureSetNames = array_map(function ($fsName) {
-            preg_match('/.*\/([^\/]*)\.yml$/', $fsName, $matches);
-            return $matches[1];
-        }, $fs->glob($glob));
-
-        $this->fixtureSetsToLoad = $fixtureSetNames;
         return $this;
     }
 

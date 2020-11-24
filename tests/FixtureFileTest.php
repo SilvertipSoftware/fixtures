@@ -40,6 +40,14 @@ class FixtureFileTest extends TestCase
         $this->assertEquals('Vancouver', $fixture['city']);
     }
 
+    public function testPhpFilesAreEvaluated() {
+        $file = $this->openFile('evaluated.php');
+        $fixture = $file->getRows()['fixture1'];
+        $this->assertEquals(2, $fixture['age']);
+        $fixture = $file->getRows()['fixture2'];
+        $this->assertContains('evaluated.php', $fixture['name']);
+    }
+
     public function testEmptyFile() {
         $this->assertNotNull($this->openFile('blank.yml'));
     }

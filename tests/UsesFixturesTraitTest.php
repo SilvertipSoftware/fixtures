@@ -112,7 +112,7 @@ class UsesFixturesTraitTest extends TestCase
         $fixtures = $test->getGlobalCache()[get_class($test)];
 
         $this->assertInternalType('array', $fixtures);
-        $this->assertEquals(2, count($fixtures));
+        $this->assertEquals(3, count($fixtures));
         $this->assertInstanceOf(FixtureSet::class, $fixtures['users']);
     }
 
@@ -124,7 +124,7 @@ class UsesFixturesTraitTest extends TestCase
         $test->setUp();
         $test->tearDown();
         $fixtures = $test->getGlobalCache()[get_class($test)];
-        $this->assertEquals(2, count($fixtures));
+        $this->assertEquals(3, count($fixtures));
     }
 
     public function testOnlyLoadsWantedFixtureSets() {

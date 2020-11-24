@@ -2,8 +2,11 @@
 
 namespace SilvertipSoftware\Fixtures;
 
-use Symfony\Component\Yaml\Yaml;
+use InvalidArgumentException;
+use SilvertipSoftware\Fixtures\FixtureFile\EvaluatesContents;
+use SilvertipSoftware\Fixtures\FixtureFile\FindsFixtures;
 use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Helper for loading fixture files (YAML, currently).
@@ -16,6 +19,14 @@ use Symfony\Component\Yaml\Exception\ParseException;
  */
 class FixtureFile
 {
+    use EvaluatesContents, FindsFixtures;
+
+    /**
+     * Known extensions for fixture files.
+     *
+     * @var array
+     */
+    protected static $extensions = ['yml', 'php'];
 
     /**
      * All the rows as parsed by YAML.
@@ -54,7 +65,7 @@ class FixtureFile
     public static function open($fileName)
     {
         $file = new static;
-        $file->rawRows = self::validatedContents($fileName);
+        $file->rawRows = $file->validatedContents($fileName);
         return $file;
     }
 
@@ -107,16 +118,18 @@ class FixtureFile
         return $this->configRow;
     }
 
-    private static function validatedContents($fileName)
+    private function validatedContents($fileName)
     {
         if (!is_file($fileName)) {
             throw new FixtureException("$fileName does not exist or is not a file", FixtureException::FILE_NOT_FOUND);
         }
 
         try {
-            $contents = Yaml::parseFile($fileName) ?? [];
-        } catch( ParseException $ex) {
+            $contents = $this->getContents($fileName);
+        } catch (ParseException $ex) {
             throw new FixtureException("File $fileName is not valid YAML", FixtureException::FORMAT_ERROR);
+        } catch (InvalidArgumentException $ex) {
+            throw new FixtureException("Error getting contents of $fileName", FixtureException::FORMAT_ERROR);
         }
 
         if (!is_array($contents)) {

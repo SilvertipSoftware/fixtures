@@ -4,7 +4,6 @@ namespace SilvertipSoftware\Fixtures;
 
 use ArrayAccess;
 use Illuminate\Database\ConnectionResolverInterface as Resolver;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Ramsey\Uuid\Uuid;
@@ -157,16 +156,15 @@ class FixtureSet implements ArrayAccess
 
     private function readFixtureFiles($path)
     {
-        $fs = new Filesystem;
-        $yamlFiles = array_merge($fs->glob($path . '/*.yml'), $fs->glob($path . '.yml'));
+        $filenames = FixtureFile::findFixtureFilesAtPath($path);
 
-        if (count($yamlFiles) == 0) {
+        if (count($filenames) == 0) {
             throw new FixtureException("No fixture set found at $path", FixtureException::FILE_NOT_FOUND);
         }
         
         $ret = [];
-        foreach ($yamlFiles as $yamlFile) {
-            $fixtureFile = FixtureFile::open($yamlFile);
+        foreach ($filenames as $fixtureFileName) {
+            $fixtureFile = FixtureFile::open($fixtureFileName);
             $this->modelClass = $fixtureFile->getModelClass() ?: $this->modelClass;
             $fixtureFile->each(function ($label, $attrs) use (&$ret) {
                 $ret[$label] = new Fixture($attrs);
