@@ -151,6 +151,10 @@ class FixtureSet implements ArrayAccess
 
     public static function identify($label, $related)
     {
+        if ($label === null) {
+            return null;
+        }
+
         return !$related->incrementing ? Uuid::uuid5(Uuid::NAMESPACE_OID, $label)->toString() : crc32($label) % self::MAX_ID;
     }
 
@@ -161,7 +165,7 @@ class FixtureSet implements ArrayAccess
         if (count($filenames) == 0) {
             throw new FixtureException("No fixture set found at $path", FixtureException::FILE_NOT_FOUND);
         }
-        
+
         $ret = [];
         foreach ($filenames as $fixtureFileName) {
             $fixtureFile = FixtureFile::open($fixtureFileName);

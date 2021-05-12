@@ -122,6 +122,17 @@ class RowBuildingTest extends TestCase
         $this->assertArrayNotHasKey('user_id', $builtRows['profiles'][1]);
     }
 
+    public function testItSetsBelongsToRelationWithNulls()
+    {
+        $this->profileFixtures['caleb']['user'] = null;
+        DB::shouldReceive('getDriverName')->andReturn('mysql');
+        $userRows = (new TableRows('users', __User::class, $this->userFixtures))->toArray();
+        $tableRows = new TableRows('profiles', __Profile::class, $this->profileFixtures);
+        $builtRows = $tableRows->toArray();
+        $this->assertArrayHasKey('user_id', $builtRows['profiles'][0]);
+        $this->assertEquals(null, $builtRows['profiles'][0]['user_id']);
+    }
+
     public function testParentIdIsNotUuid()
     {
         DB::shouldReceive('getDriverName')->andReturn('mysql');
