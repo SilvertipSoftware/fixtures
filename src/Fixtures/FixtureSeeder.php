@@ -33,7 +33,9 @@ class FixtureSeeder extends Seeder
 
     protected function getFixturePath()
     {
-        return $this->fixturePath ?? 'tests/fixtures';
+        return isset($this->fixturePath)
+            ? $this->fixturePath
+            : 'tests/fixtures';
     }
 
     protected function findFixtures()
@@ -44,7 +46,7 @@ class FixtureSeeder extends Seeder
     }
 
     protected function loadFixtures() {
-        if ($this->modelNamespace ?? false) {
+        if (isset($this->modelNamespace) ? $this->modelNamespace : false) {
             FixtureSet::setModelNamespace($this->modelNamespace);
         }
 

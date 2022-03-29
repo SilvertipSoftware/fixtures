@@ -73,7 +73,9 @@ class Fixture implements ArrayAccess
      */
     public function offsetGet($key)
     {
-        return $this->attributes[$key] ?? null;
+        return isset($this->attributes[$key])
+            ? $this->attributes[$key]
+            : null;
     }
 
     /**

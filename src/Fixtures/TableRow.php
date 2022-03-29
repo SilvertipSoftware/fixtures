@@ -105,7 +105,9 @@ class TableRow
         {
             foreach ([$this->model->getCreatedAtColumn(), $this->model->getUpdatedAtColumn()] as $stampColName)
             {
-                $this->fixture[$stampColName] = $this->fixture[$stampColName] ?? $this->now;
+                $this->fixture[$stampColName] = isset($this->fixture[$stampColName])
+                    ? $this->fixture[$stampColName]
+                    : $this->now;
             }
         }
         return $this;
