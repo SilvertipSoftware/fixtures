@@ -1,6 +1,6 @@
 {
     "name": "silvertipsoftware/fixtures",
-    "description": "A better fixture package for Laravel 5",
+    "description": "A better fixture package for Laravel",
     "keywords": ["laravel", "fixtures"],
     "type": "library",
     "license": "MIT",
@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=7.0",
         "illuminate/support": ">=5.5",
         "illuminate/database": ">=5.5",
         "illuminate/filesystem": ">=5.5",
