@@ -14,7 +14,7 @@ class RowBuildingTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
-        __container(new Container);
+        fakeContainer(new Container);
         $this->setUpDatabase();
 
         $this->userFixtures = [
