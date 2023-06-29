@@ -31,7 +31,11 @@ class FixtureSet implements ArrayAccess
         $this->modelClass = $className;
 
         $this->fixtures = $this->readFixtureFiles($path);
-        $this->tableName = (new $this->modelClass)->getTable() ?? static::defaultFixtureTableName($name, $config);
+        $table = (new $this->modelClass)->getTable();
+
+        $this->tableName = isset($table)
+            ? $table
+            : static::defaultFixtureTableName($name, $config);
     }
 
     public function getName()
@@ -46,7 +50,9 @@ class FixtureSet implements ArrayAccess
 
     public function offsetGet($label)
     {
-        return $this->fixtures[$label] ?? null;
+        return isset($this->fixtures[$label])
+            ? $this->fixtures[$label]
+            : null;
     }
 
     public function offsetSet($label, $value)
@@ -74,7 +80,10 @@ class FixtureSet implements ArrayAccess
     public function loadModel($label)
     {
         if (isset($this[$label])) {
-            $key = $this[$label][$this->getKeyName()] ?? 0;
+            $key = isset($this[$label][$this->getKeyName()])
+                ? $this[$label][$this->getKeyName()]
+                : 0;
+
             return $this->getDatabaseInterface()->findModel($this->modelClass, $key);
         }
         return null;
@@ -96,7 +105,11 @@ class FixtureSet implements ArrayAccess
 
     public static function defaultFixtureTableName($fsName, $config = [])
     {
-        return ($config->tableNamePrefix ?? '') . str_replace('/', '_', $fsName);
+        $prefix = isset($config->tableNamePrefix)
+            ? $config->tableNamePrefix
+            : '';
+
+        return $prefix . str_replace('/', '_', $fsName);
     }
 
     public static function resetCache()
@@ -106,7 +119,9 @@ class FixtureSet implements ArrayAccess
 
     public static function cacheForConnection($connectionName)
     {
-        return self::$allCachedFixtures[$connectionName] ?? [];
+        return isset(self::$allCachedFixtures[$connectionName])
+            ? self::$allCachedFixtures[$connectionName]
+            : [];
     }
 
     public static function fixtureIsCached($connectionName, $table_name)
@@ -197,7 +212,8 @@ class FixtureSet implements ArrayAccess
     {
         $fixtureSetsByConnection = collect($fixtureSets)->groupBy(function ($set) use ($connectionName) {
             $m = new $set->modelClass;
-            return $m->getConnectionName() ?? $connectionName;
+
+            return $m->getConnectionName() ?: $connectionName;
         });
 
         $fixtureSetsByConnection->each(function ($sets, $conn) use ($connectionName) {
@@ -205,7 +221,9 @@ class FixtureSet implements ArrayAccess
 
             foreach ($sets as $set) {
                 foreach ($set->getTableRows() as $table => $rows) {
-                    $curRows = $tableRowsForConnection[$table] ?? [];
+                    $curRows = isset($tableRowsForConnection[$table])
+                        ? $tableRowsForConnection[$table]
+                        : [];
                     $tableRowsForConnection[$table] = array_merge($curRows, $rows);
                 }
             }

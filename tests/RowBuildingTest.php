@@ -1,10 +1,11 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use Illuminate\Container\Container;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Support\Facades\DB;
-use SilvertipSoftware\Fixtures\TableRows;
+use PHPUnit\Framework\TestCase;
 use SilvertipSoftware\Fixtures\Fixture;
+use SilvertipSoftware\Fixtures\TableRows;
 
 include('TestModels.php');
 
@@ -13,6 +14,7 @@ class RowBuildingTest extends TestCase
     protected function setUp()
     {
         parent::setUp();
+        fakeContainer(new Container);
         $this->setUpDatabase();
 
         $this->userFixtures = [
@@ -183,7 +185,10 @@ class RowBuildingTest extends TestCase
 
     private function setUpDatabase()
     {
-        $capsule = new Capsule;
+        $container = new Container;
+        Illuminate\Support\Facades\Facade::setFacadeApplication($container);
+
+        $capsule = new Capsule($container);
 
         $capsule->addConnection([
             'driver'    => 'mysql',
@@ -197,5 +202,9 @@ class RowBuildingTest extends TestCase
         ]);
         $capsule->setAsGlobal();
         $capsule->bootEloquent();
+
+        $container->singleton('db', function () use ($capsule) {
+            return $capsule;
+        });
     }
 }

@@ -42,7 +42,9 @@ trait EvaluatesContents
                 break;
         }
 
-        return $contents ?? [];
+        return isset($contents)
+            ? $contents
+            : [];
     }
 
     /**
