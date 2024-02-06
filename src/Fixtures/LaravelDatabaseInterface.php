@@ -42,6 +42,12 @@ class LaravelDatabaseInterface implements DatabaseInterface
      */
     public function insert($connection, $table, $rows)
     {
+        foreach ($rows as &$row) {
+            $row = array_map(function($value) {
+                return $value === 'CURDATE()' ? \DB::raw('CURDATE()') : $value;
+            }, $row);
+        }
+
         \DB::connection($connection)->table($table)->insert($rows);
     }
 
