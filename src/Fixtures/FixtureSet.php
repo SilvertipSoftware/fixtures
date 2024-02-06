@@ -135,6 +135,7 @@ class FixtureSet implements ArrayAccess
 
     public static function createFixtures($fixturesDirectory, $fixtureSetNames, $classNames = [], $config = [])
     {
+        self::resetCache();
         $classNameCache = new ClassCache($classNames);
         $connectionName = config('database.default');
 
