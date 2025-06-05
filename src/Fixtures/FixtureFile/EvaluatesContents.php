@@ -35,7 +35,8 @@ trait EvaluatesContents
                 $contents = Yaml::parse($str);
                 break;
             case 'yml':
-                $contents = Yaml::parseFile($path);
+                $str = file_get_contents($path);
+                $contents = Yaml::parse($str);
                 break;
             default:
                 throw new InvalidArgumentException("Unknown fixture extension " . $extension . " for " . $path);
