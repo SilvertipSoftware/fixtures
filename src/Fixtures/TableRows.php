@@ -76,7 +76,7 @@ class TableRows
      */
     public function addRowsToTable($name, $rows)
     {
-        $this->tables[$name] = array_merge($this->tables[$name] ?? [], $rows);
+        $this->tables[$name] = array_merge(isset($this->tables[$name]) ? $this->tables[$name] : [], $rows);
     }
 
     /**

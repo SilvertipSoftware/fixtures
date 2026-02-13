@@ -3,10 +3,11 @@
 namespace SilvertipSoftware\Fixtures;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Arr;
+use ReflectionClass;
 
 /**
  * Builder for a model database row. Adds timestamps, ids, relations, etc as appropriate.
@@ -104,7 +105,9 @@ class TableRow
         {
             foreach ([$this->model->getCreatedAtColumn(), $this->model->getUpdatedAtColumn()] as $stampColName)
             {
-                $this->fixture[$stampColName] = $this->fixture[$stampColName] ?? $this->now;
+                $this->fixture[$stampColName] = isset($this->fixture[$stampColName])
+                    ? $this->fixture[$stampColName]
+                    : $this->now;
             }
         }
         return $this;
@@ -176,15 +179,19 @@ class TableRow
                     $pivotRows = [];
                     $rawLabel = Arr::pull($this->fixture, $key);
                     $labels = is_array($rawLabel) ? $rawLabel : preg_split('/\s*,\s*/', $rawLabel);
+                    $foreignKeyNameParts = explode('.', $type->getQualifiedForeignKeyName());
+                    $foreignKeyName = end($foreignKeyNameParts);
+                    $relatedKeyNameParts = explode('.', $type->getQualifiedRelatedKeyName());
+                    $relatedKeyName = end($relatedKeyNameParts);
 
                     foreach($labels as $label) {
                         // prevent morphedByMany direction
-                        if ($type instanceof MorphToMany && $type->getInverse() == false) {
+                        if ($type instanceof MorphToMany && $this->getInversePropertyOfRelation($type) == false) {
                             $pivotRow[$type->getMorphType()] = $type->getMorphClass();
                         }
 
-                        $pivotRow[$type->getForeignPivotKeyName()] = $this->fixture[$this->model->getKeyName()];
-                        $pivotRow[$type->getRelatedPivotKeyName()] = FixtureSet::identify($label, $related);
+                        $pivotRow[$foreignKeyName] = $this->fixture[$this->model->getKeyName()];
+                        $pivotRow[$relatedKeyName] = FixtureSet::identify($label, $related);
                         $pivotRows[] = $pivotRow;
                     }
                     $this->container->addRowsToTable($pivotTableName, $pivotRows);
@@ -193,5 +200,19 @@ class TableRow
         });
 
         return $this;
+    }
+
+    /**
+     * Old Laravel doesn't expose the inverse property, so hack it.
+     *
+     * @return $this
+     */
+    private function getInversePropertyOfRelation($obj) {
+        $reflection = new ReflectionClass($obj);
+        $property = $reflection->getProperty('inverse');
+        $property->setAccessible(true);
+        $value = $property->getValue($obj);
+
+        return $value;
     }
 }

@@ -63,7 +63,9 @@ trait UsesFixtures
      */
     protected function getFixturePath()
     {
-        return $this->fixturePath ?? 'tests/fixtures';
+        return isset($this->fixturePath)
+            ? $this->fixturePath
+            : 'tests/fixtures';
     }
 
     /**
@@ -90,9 +92,9 @@ trait UsesFixtures
      */
     protected function setUpTraits()
     {
-        FixtureSet::setModelNamespace($this->modelNamespace ?? '\App');
+        FixtureSet::setModelNamespace(isset($this->modelNamespace) ? $this->modelNamespace : '\App');
 
-        $this->withFixtures($this->fixtures ?? 'all')
+        $this->withFixtures(isset($this->fixtures) ? $this->fixtures : 'all')
             ->setUpFixtures();
         parent::setUpTraits();
     }
@@ -130,11 +132,12 @@ trait UsesFixtures
                 $labels = Arr::flatten([$labels]);
                 $isSingleRecord = count($labels) == 1;
 
-                $this->modelCache[$name] = $this->modelCache[$name] ?? [];
+                $this->modelCache[$name] = isset($this->modelCache[$name]) ? $this->modelCache[$name] : [];
                 $records = array_map(function ($label) use ($name) {
                     if (isset($this->loadedFixtures[$name][$label])) {
-                        $this->modelCache[$name][$label] = $this->modelCache[$name][$label]
-                            ?? $this->loadedFixtures[$name]->loadModel($label);
+                        $this->modelCache[$name][$label] = isset($this->modelCache[$name][$label])
+                            ? $this->modelCache[$name][$label]
+                            : $this->loadedFixtures[$name]->loadModel($label);
                     } else {
                         throw new \Exception("No fixture named '$label' found for fixture set '$name'");
                     }

@@ -113,7 +113,9 @@ class FixtureFile
     private function getConfigRow()
     {
         if (!$this->configRow) {
-            $this->configRow = $this->rawRows['_fixture'] ?? ['model_class' => null];
+            $this->configRow = isset($this->rawRows['_fixture'])
+                ? $this->rawRows['_fixture']
+                : ['model_class' => null];
         }
         return $this->configRow;
     }

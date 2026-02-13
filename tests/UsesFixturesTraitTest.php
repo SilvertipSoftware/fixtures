@@ -11,7 +11,7 @@ include('TestModels.php');
 
 $container = null;
 
-function __container($obj = null) {
+function fakeContainer($obj = null) {
     global $container;
 
     if ($obj != null) {
@@ -62,13 +62,15 @@ abstract class Sample extends StubTestCase {
     }
 }
 
+class ConcreteSample extends Sample {}
+
 class UsesFixturesTraitTest extends TestCase
 {
     protected $mockLoader;
 
     protected function setUp() {
         parent::setUp();
-        __container(new Container);
+        fakeContainer(new Container);
         $this->setUpDatabase();
     }
 
@@ -231,13 +233,15 @@ class UsesFixturesTraitTest extends TestCase
     }
 
     private function createTest($fixtures = [], $namespace = null) {
-        $test = new class($fixtures, $namespace) extends Sample {};
+        // $test = new class($fixtures, $namespace) extends Sample {};
+        $test = new ConcreteSample($fixtures, $namespace);
+        $test->exposedClearCache();
         return $test;
     }
 
     private function setUpDatabase()
     {
-        $capsule = new Capsule(__container());
+        $capsule = new Capsule(fakeContainer());
 
         $capsule->addConnection([
             'driver'    => 'mysql',
