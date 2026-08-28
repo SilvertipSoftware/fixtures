@@ -32,10 +32,10 @@ trait EvaluatesContents
         switch ($extension) {
             case 'php':
                 $str = $this->evaluatePath($path);
-                $contents = Yaml::parse($str);
+                $contents = Yaml::parse($str, 0, 128, PHP_INT_MAX);
                 break;
             case 'yml':
-                $contents = Yaml::parseFile($path);
+                $contents = Yaml::parseFile($path, 0, 128, PHP_INT_MAX);
                 break;
             default:
                 throw new InvalidArgumentException("Unknown fixture extension " . $extension . " for " . $path);
@@ -58,7 +58,7 @@ trait EvaluatesContents
 
         try {
             (new Filesystem)->getRequire($path);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
             throw new InvalidArgumentException("Evaluation error in fixture file " . $path);
         }
 

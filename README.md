@@ -10,6 +10,7 @@ Fixtures are written in YAML, and there's one file per Eloquent model class.
 
 ## Requirements & Caveats
 
+- PHP 8.1 and Laravel 9 are required.
 - Tests must use `DatabaseTransactions`, since the fixtures are created before the tests run, and need to be returned
 to the known-good state after each test. This may change in future releases.
 - Namespaced Eloquent models are not handled particularly well, although the `model_class` directive goes a long way.

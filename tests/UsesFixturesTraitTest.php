@@ -66,13 +66,13 @@ class UsesFixturesTraitTest extends TestCase
 {
     protected $mockLoader;
 
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         __container(new Container);
         $this->setUpDatabase();
     }
 
-    protected function tearDown() {
+    protected function tearDown(): void {
         Mockery::close();
     }
 
@@ -81,7 +81,7 @@ class UsesFixturesTraitTest extends TestCase
         FixtureSet::resetCache();
         $test->exposedClearCache();
         $test->setUp();
-        $this->assertInternalType('array', $test->getGlobalCache());
+        $this->assertIsArray($test->getGlobalCache());
         $this->assertContains(get_class($test), array_keys($test->getGlobalCache()));
     }
 
@@ -91,7 +91,7 @@ class UsesFixturesTraitTest extends TestCase
         $this->mockLoader->shouldReceive('insert')->andReturnUsing(function($c, $t, $r) {
             $this->assertEquals('default', $c);
             $this->assertEquals('users', $t);
-            $this->assertInternalType('array', $r);
+            $this->assertIsArray($r);
             $this->assertEquals(1, count($r));
             $this->assertEquals('Caleb Widogast', $r[0]['name']);
         });
@@ -111,7 +111,7 @@ class UsesFixturesTraitTest extends TestCase
         $test->setUp();
         $fixtures = $test->getGlobalCache()[get_class($test)];
 
-        $this->assertInternalType('array', $fixtures);
+        $this->assertIsArray($fixtures);
         $this->assertEquals(3, count($fixtures));
         $this->assertInstanceOf(FixtureSet::class, $fixtures['users']);
     }
