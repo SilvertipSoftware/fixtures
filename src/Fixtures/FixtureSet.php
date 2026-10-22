@@ -39,22 +39,22 @@ class FixtureSet implements ArrayAccess
         return $this->name;
     }
 
-    public function offsetExists($label)
+    public function offsetExists(mixed $label): bool
     {
         return array_key_exists($label, $this->fixtures);
     }
 
-    public function offsetGet($label)
+    public function offsetGet(mixed $label): mixed
     {
         return $this->fixtures[$label] ?? null;
     }
 
-    public function offsetSet($label, $value)
+    public function offsetSet(mixed $label, mixed $value): void
     {
         $this->fixtures[$label] = $value;
     }
 
-    public function offsetUnset($label)
+    public function offsetUnset(mixed $label): void
     {
         unset($this->fixtures[$label]);
     }

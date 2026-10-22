@@ -59,7 +59,7 @@ class Fixture implements ArrayAccess
      * @param  string $key
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists(mixed $key): bool
     {
         return array_key_exists($key, $this->attributes);
     }
@@ -71,7 +71,7 @@ class Fixture implements ArrayAccess
      * @param  string $key
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $key): mixed
     {
         return $this->attributes[$key] ?? null;
     }
@@ -83,7 +83,7 @@ class Fixture implements ArrayAccess
      * @param  mixed  $value
      * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet(mixed $key, mixed $value): void
     {
         $this->attributes[$key] = $value;
     }
@@ -94,7 +94,7 @@ class Fixture implements ArrayAccess
      * @param  string $key
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $key): void
     {
         unset($this->attributes[$key]);
     }

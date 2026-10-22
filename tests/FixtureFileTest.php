@@ -6,7 +6,7 @@ use SilvertipSoftware\Fixtures\FixtureException;
 
 class FixtureFileTest extends TestCase
 {
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->fileDir = __DIR__ . '/ymlfiles/';
     }
@@ -24,8 +24,8 @@ class FixtureFileTest extends TestCase
     public function testDataTypesAreAsExpected() {
         $file = $this->openFile('complete.yml');
         $fixture = $file->getRows()['fixture1'];
-        $this->assertInternalType('string', $fixture['name']);
-        $this->assertInternalType('int', $fixture['age']);
+        $this->assertIsString($fixture['name']);
+        $this->assertIsInt($fixture['age']);
     }
 
     public function testStringsAreUnquoted() {
@@ -40,12 +40,31 @@ class FixtureFileTest extends TestCase
         $this->assertEquals('Vancouver', $fixture['city']);
     }
 
+    public function testSupportsMoreThanTheDefaultYamlAliasLimit() {
+        $temporaryPath = tempnam(sys_get_temp_dir(), 'fixtures');
+        $path = $temporaryPath . '.yml';
+        rename($temporaryPath, $path);
+
+        $contents = "DEFAULTS: &DEFAULTS\n    name: Default\n";
+        for ($i = 0; $i < 129; $i++) {
+            $contents .= "\nfixture{$i}:\n    <<: *DEFAULTS\n";
+        }
+        file_put_contents($path, $contents);
+
+        try {
+            $file = FixtureFile::open($path);
+            $this->assertEquals('Default', $file->getRows()['fixture128']['name']);
+        } finally {
+            unlink($path);
+        }
+    }
+
     public function testPhpFilesAreEvaluated() {
         $file = $this->openFile('evaluated.php');
         $fixture = $file->getRows()['fixture1'];
         $this->assertEquals(2, $fixture['age']);
         $fixture = $file->getRows()['fixture2'];
-        $this->assertContains('evaluated.php', $fixture['name']);
+        $this->assertStringContainsString('evaluated.php', $fixture['name']);
     }
 
     public function testEmptyFile() {
@@ -65,14 +84,14 @@ class FixtureFileTest extends TestCase
     public function testTopLevelIsNotAMap() {
         $this->expectException(FixtureException::class);
         $this->expectExceptionCode(FixtureException::FORMAT_ERROR);
-        $this->expectExceptionMessageRegExp('/not a map/');
+        $this->expectExceptionMessageMatches('/not a map/');
         $this->openFile('scalar.yml');
     }
 
     public function testFixtureIsNotAMap() {
         $this->expectException(FixtureException::class);
         $this->expectExceptionCode(FixtureException::FORMAT_ERROR);
-        $this->expectExceptionMessageRegExp('/invalid maps.*ron, hermione/');
+        $this->expectExceptionMessageMatches('/invalid maps.*ron, hermione/');
         $this->openFile('badrows.yml');
     }
 

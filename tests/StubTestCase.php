@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase as BaseTestCase;
  */
 abstract class StubTestCase extends BaseTestCase
 {
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->setUpTraits();
     }

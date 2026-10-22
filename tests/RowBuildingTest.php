@@ -10,7 +10,7 @@ include('TestModels.php');
 
 class RowBuildingTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
         $this->setUpDatabase();
@@ -73,7 +73,7 @@ class RowBuildingTest extends TestCase
         $tableRows = new TableRows('users', __User::class, $this->userFixtures);
         $builtRows = $tableRows->toArray();
         $caleb = $builtRows['users'][0];
-        $this->assertInternalType('int', $caleb['id']);
+        $this->assertIsInt($caleb['id']);
     }
 
     public function testItAssignsUuid5Ids()
@@ -81,7 +81,7 @@ class RowBuildingTest extends TestCase
         $tableRows = new TableRows('users', __GlobalUser::class, $this->userFixtures);
         $builtRows = $tableRows->toArray();
         $caleb = $builtRows['users'][0];
-        $this->assertRegExp('/[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/', $caleb['id']);
+        $this->assertMatchesRegularExpression('/[0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12}/', $caleb['id']);
     }
 
     public function testItInterpolatesLabelToken()
@@ -138,8 +138,8 @@ class RowBuildingTest extends TestCase
         DB::shouldReceive('getDriverName')->andReturn('mysql');
         $userRows = (new TableRows('users', __User::class, $this->userFixtures))->toArray();
         $builtRows = (new TableRows('global_users', __GlobalUser::class, $this->globalUserFixtures))->toArray();
-        $this->assertInternalType('int', $builtRows['global_users'][0]['user_id']);
-        $this->assertInternalType('string', $builtRows['global_users'][0]['id']);
+        $this->assertIsInt($builtRows['global_users'][0]['user_id']);
+        $this->assertIsString($builtRows['global_users'][0]['id']);
         $this->assertEquals($userRows['users'][0]['id'], $builtRows['global_users'][0]['user_id']);
     }
 

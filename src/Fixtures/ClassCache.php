@@ -36,7 +36,7 @@ class ClassCache implements ArrayAccess
      * @param  string $key
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists(mixed $key): bool
     {
         return array_key_exists($key, $this->mapping);
     }
@@ -48,7 +48,7 @@ class ClassCache implements ArrayAccess
      * @param  string $key
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet(mixed $key): mixed
     {
         if (!array_key_exists($key, $this->mapping))
         {
@@ -65,7 +65,7 @@ class ClassCache implements ArrayAccess
      * @param  string $clz
      * @return void
      */
-    public function offsetSet($key, $clz)
+    public function offsetSet(mixed $key, mixed $clz): void
     {
         $this->mapping[$key] = is_subclass_of($clz, Model::class) ? $clz : null;
     }
@@ -76,7 +76,7 @@ class ClassCache implements ArrayAccess
      * @param  string $key
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset(mixed $key): void
     {
         unset($this->mapping[$key]);
     }
