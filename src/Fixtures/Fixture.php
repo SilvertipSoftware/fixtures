@@ -12,6 +12,13 @@ class Fixture implements ArrayAccess
 {
 
     /**
+     * The Model's tableName.
+     *
+     * @var string
+     */
+    protected string $tableName;
+
+    /**
      * The attributes defined on the model fixture.
      *
      * @var array
