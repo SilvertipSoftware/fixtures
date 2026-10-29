@@ -16,12 +16,13 @@ class FixtureSet implements ArrayAccess
     protected static $allLoadedFixtures = [];
     protected static $database;
     protected static $modelNamespacePrefix = '';
-
+    
+    protected $config;
+    protected $fixtures;
+    protected $modelClass;
     protected $name;
     protected $path;
-    protected $config;
-    protected $modelClass;
-    protected $fixtures;
+    protected string $tableName;
 
     public function __construct($name, $className, $path, $config = [])
     {

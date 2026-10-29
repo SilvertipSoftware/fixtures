@@ -25,6 +25,14 @@ trait UsesFixtures
     protected static $alreadyLoadedFixtures = [];
 
     /**
+     * The fixtures loaded in this instance;
+     * a working copy of one entry of $alreadyLoadedFixtures.
+     *
+     * @var array
+     */
+    protected array $loadedFixtures = [];
+
+    /**
      * A test-supplied default fixture name to class name mapping. Populated with defaults if not
      * supplied; just makes config rows in fixtures not required in certain cases.
      *

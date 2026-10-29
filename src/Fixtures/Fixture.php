@@ -10,7 +10,6 @@ use ArrayAccess;
  */
 class Fixture implements ArrayAccess
 {
-
     /**
      * The attributes defined on the model fixture.
      *
