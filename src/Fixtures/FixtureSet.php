@@ -12,17 +12,11 @@ class FixtureSet implements ArrayAccess
 {
     const MAX_ID = 2**30 - 1;
 
-    /**
-     * The Model's tableName.
-     *
-     * @var string
-     */
-    protected string $tableName;
-
     protected static $allCachedFixtures = [];
     protected static $allLoadedFixtures = [];
     protected static $database;
     protected static $modelNamespacePrefix = '';
+    protected string $tableName;
 
     protected $name;
     protected $path;
